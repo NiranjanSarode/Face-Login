@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UDAAN</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Body and Font Styling */
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            scroll-behavior: smooth; /* Enable smooth scrolling */
+        }
+        
+        /* Header Styling */
+        .header {
+            background: black;
+            color: #fff;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 90%;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .nav-links {
+            list-style: none;
+            display: flex;
+        }
+        
+        .nav-links li {
+            margin-left: 1.5rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #fff;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #f39c12;
+        }
+        
+        /* Main Content Styling */
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        /* Section Styling */
+        .section {
+            padding: 4rem 1rem;
+            text-align: center;
+        }
+        
+        .home-section {
+            
+            background-color: #403c3c;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .home-section h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .home-section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            background: #f39c12;
+            color: #fff;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #e67e22;
+        }
+        
+        .about-section,
+        .services-section,
+        .contact-section {
+            background: #fff;
+            margin-top: -1px; /* Fix overlapping border issue */
+        }
+        
+        .about-section h2,
+        .services-section h2,
+        .contact-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .service {
+            background: #f9f9f9;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .service h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        /* Footer Styling */
+        .footer {
+            background: black;
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+            margin-top: 2rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+            }
+        
+            .nav-links {
+                flex-direction: column;
+            }
+        
+            .nav-links li {
+                margin: 0.5rem 0;
+            }
+        
+            .home-section h1 {
+                font-size: 2.5rem;
+            }
+        
+            .home-section p {
+                font-size: 1rem;
+            }
+        }
+
+        @media (min-width: 2560px) {
+            .navbar {
+                max-width: 100%;
+                padding: 0 2rem;
+            }
+        
+            .logo {
+                font-size: 2rem;
+            }
+        
+            .nav-links li {
+                margin-left: 2rem;
+            }
+        
+            .nav-links a {
+                font-size: 1.2rem;
+            }
+        
+            .home-section h1 {
+                font-size: 4rem;
+            }
+        
+            .home-section p {
+                font-size: 1.5rem;
+            }
+        
+            .btn {
+                padding: 1rem 2rem;
+                font-size: 1.2rem;
+            }
+        
+            .about-section h2,
+            .services-section h2,
+            .contact-section h2 {
+                font-size: 2.5rem;
+            }
+        
+            .services-grid {
+                gap: 3rem;
+            }
+        
+            .service {
+                padding: 3rem;
+            }
+        
+            .service h3 {
+                font-size: 2rem;
+            }
+        
+            .footer {
+                padding: 2rem 0;
+                font-size: 1.2rem;
+            }
+        }
+        
+    </style>
+    
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">UDAAN</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="/login/">Login</a></li>
+                <li><a href="/register/">Register</a></li>
+            </ul>
+        </nav>
+    </header>
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show my-0" role="alert">
+      <strong>{{message}}</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+        <span aria-hidden = "true">&times;</span>
+      </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    <main>
+        <section id="home" class="section home-section">
+            <div class="home-content">
+                <h1>Welcome to UDAAN</h1>
+                <p>Unit for Digitisation, Automation, Artificial Intelligence and Application Networking</p>
+                <a href="#about" class="btn">Learn More</a>
+            </div>
+        </section>
+
+        <section id="about" class="section about-section">
+            <h2>About Us</h2>
+            <p>The IAF Centre of Excellence for Artificial Intelligence under the aegis of UDAAN (Unit for Digitisation, Automation, Artificial Intelligence and Application Networking) was inaugurated by Air Marshal Sandeep Singh, Vice Chief of the Air Staff (VCAS), on 10 July 2022 at Air Force Station Rajokri, New Delhi.
+
+                A Big Data Analytics and Al Platform has been commissioned in the IAF's Al Centre, for handling all aspects of Analytics, Machine Learning, Natural Language Processing, Neural Networks and Deep Learning algorithms. The high-end compute requirements would be undertaken by the latest Graphical Processing Unit powered servers.
+               
+               Addressing the gathering, VCAS said that IAF has taken proactive steps to embed Industry 4.0 and Al based technologies in its war fighting processes. He reiterated that the AI COE with high end compute and big data storage capabilities, coupled with full spectrum Al software suites, would substantially enhance operational capability of IAF. The Al based applications are being developed with inhouse expertise in coordination with various PSUs, MSMEs and leading academia in the field of Artificial intelligence.</p>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 Austin Niranjan Gaurav. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Smooth scroll for internal links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!-- users/templates/users/login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login with Camera</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f4f4f4;
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            scroll-behavior: smooth;
+        }
+        .header {
+            background: black;
+            color: #fff;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 90%;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .nav-links {
+            list-style: none;
+            display: flex;
+        }
+        
+        .nav-links li {
+            margin-left: 1.5rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: #fff;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #f39c12;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">UDAAN</div>
+            <ul class="nav-links">
+                <li><a href="http://127.0.0.1:8000/">Home</a></li>
+                <li><a href="http://127.0.0.1:8000/">About</a></li>
+                <li><a href="/login/">Login</a></li>
+                <li><a href="/register/">Register</a></li>
+            </ul>
+        </nav>
+    </header>
+    <h1 style="text-align: center;">Login</h1>
+    <div class="felxbox" style="display: flex; gap: 100px; background-color: #464040;">
+    <div class="video-container">
+        <img src="/video_feed_2/" alt="Video Feed">
+    </div>
+
+    <div class="allreact" style=" margin-left: 50px;margin-right: 160px;font-size: larger; color: white;">
+
+    <div id="react">
+        <span id="name_display">.</span>
+    </div>
+
+    <div id="react2">
+        <span id="ges_display">..</span>
+    </div>
+
+    <div id="react3">
+        <span id="ges_count_display">...</span>
+    </div>
+
+    
+
+    </div>
+    <div id="line" style="background-color: red; width: 5%;"></div>
+    </div>
+</div>
+
+
+    <script>
+        var line = document.getElementById('line')
+        var name = document.getElementById('name')
+        console.log(name)
+        if (!!window.EventSource ){
+            var source = new EventSource("{% url 'login_react_1' %}");
+            source.onmessage = function(event){
+                
+                name = event.data
+                document.getElementById("name_display").textContent = name;
+                if (name !== ""){
+                    line.style.backgroundColor = "yellow"
+                }
+                
+            };
+        }
+        else{
+            console.log("Your Browser does not support SSE")
+        }
+        if (!!window.EventSource){
+            var source = new EventSource("{% url 'login_react_2' %}");
+            source.onmessage = function(event){
+                
+                document.getElementById("ges_display").textContent = event.data;
+                
+            };
+        }
+        else{
+            console.log("Your Browser does not support SSE")
+        }
+        if (!!window.EventSource){
+            var source = new EventSource("{% url 'login_react_3' %}");
+            source.onmessage = function(event){
+                if (event.data === "redirect"){
+                    window.location.href = "{% url 'homepage' %}";
+                }
+                else{
+                    document.getElementById("ges_count_display").textContent = event.data;
+                }
+            };
+        }
+        else{
+            console.log("Your Browser does not support SSE")
+        }
+    </script>
+</body>
+</html>

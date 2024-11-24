@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Query Chatbot</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    <script src="{% static 'plotly/plotly-latest.min.js' %}"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar" id="history-sidebar">
+        <div class="sidebar-header">
+          <h2>Query History</h2>
+          <div class="clear-history">
+            <form
+              method="post"
+              action="{% url 'clear_history' %}?name={{ username }}"
+              id="clear-history-form"
+            >
+              {% csrf_token %}
+              <button type="submit" name="clear_history" class="btn">
+                Clear
+              </button>
+            </form>
+            <form
+              method="post"
+              action="{% url 'download_history_xml' %}"
+              id="download-history-form"
+            >
+              {% csrf_token %}
+              <button type="submit" name="download_history" class="btn">
+                Download XML
+              </button>
+            </form>
+          </div>
+        </div>
+        {% for item in query_history %}
+        <div class="history-item" onclick="loadHistory({{ forloop.counter0 }})">
+          <p><strong>Question:</strong> {{ item.question }}</p>
+          <p><strong>SQL:</strong> {{ item.sql_query }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="main-content">
+        <div class="top-buttons">
+          <button onclick="window.location.href='{% url 'upload_csv' %}'" class="btn">Add CSV</button>
+          <select id="table-select">
+            <option value="">Select a table</option>
+            {% for table_name in table_names %}
+            <option value="{{ table_name }}">{{ table_name }}</option>
+            {% endfor %}
+          </select>
+          <button type="button" onclick="fetchTableData()" class="btn">
+            Show Table Data
+          </button>
+        </div>
+        <h1>Query Chatbot</h1>
+        {% if query %}
+        <div class="sql-section">
+          <h2>SQL Query Generated:</h2>
+          <div class="sql-code">{{ query }}</div>
+        </div>
+        {% endif %} {% if results %}
+        <div class="results" style="overflow-y: scroll; overflow-x: scroll">
+          <h2>Results:</h2>
+          <table>
+            <thead>
+              <tr>
+                {% for column in results.0 %}
+                <th>{{ column }}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in results %}
+              <tr>
+                {% for cell in row.values %}
+                <td>{{ cell }}</td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="btn-group">
+          <form method="post" action="">
+            {% csrf_token %}
+            <input type="hidden" name="query" value="{{ query }}" />
+            <button type="submit" name="csv" class="btn">Download CSV</button>
+            <button type="submit" name="word" class="btn">Download Word</button>
+            <button type="submit" name="ppt" class="btn">
+              Download PowerPoint
+            </button>
+            <button type="button" id="visualize-button" class="btn">
+              Visualize
+            </button>
+          </form>
+        </div>
+        <div id="chart"></div>
+        {% else %}
+        <p>No results found</p>
+        {% endif %}
+        <form method="post" class="input-form" id="query-form">
+          {% csrf_token %}
+          <input
+            type="text"
+            name="query"
+            id="query-input"
+            placeholder="Enter your query..."
+            required
+          />
+          <button type="submit" class="btn">Send</button>
+        </form>
+        <div class="results" id="table-data" style="display: none">
+          <button type="button" onclick="closeTableData()" class="close-btn">
+            &times;
+          </button>
+          <h2>Table Data:</h2>
+          <table>
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+          <p id="no-results-msg" style="display: none">No results found</p>
+        </div>
+      </div>
+      <div class="right_bar">
+        <div class="name_bar">Welcome {{ username }}</div>
+        <div class="logout_bar">
+          <a href="/logout/">Logout</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("query-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const input = document.getElementById("query-input");
+          const historySidebar = document.getElementById("history-sidebar");
+          const historyItem = document.createElement("div");
+
+          historyItem.className = "history-item";
+          historyItem.innerHTML = `<p><strong>Question:</strong> ${input.value}</p>`;
+          historyItem.setAttribute(
+            "onclick",
+            `loadHistory(${historySidebar.childElementCount - 1})`
+          );
+          historySidebar.insertBefore(historyItem, historySidebar.firstChild);
+
+          this.submit();
+        });
+
+      document
+        .getElementById("visualize-button")
+        .addEventListener("click", function () {
+          const chartDiv = document.getElementById("chart");
+          const results = JSON.parse("{{ results_json|escapejs }}");
+
+          if (results.length === 0) {
+            chartDiv.innerHTML = "No results to display";
+            return;
+          }
+
+          const columnNames = Object.keys(results[0]);
+          const trace = {
+            x: results.map((row) => row[columnNames[0]]),
+            y: results.map((row) => row[columnNames[1]]),
+            type: "bar",
+          };
+          const layout = {
+            title: "Query Results",
+            xaxis: { title: columnNames[0] },
+            yaxis: { title: columnNames[1] },
+            width: 800, // Set the width of the plot
+            height: 400, // Set the height of the plot
+          };
+
+          Plotly.newPlot(chartDiv, [trace], layout);
+        });
+
+      function fetchTableData() {
+        const tableSelect = document.getElementById("table-select");
+        const selectedTable = tableSelect.value;
+
+        if (selectedTable) {
+          const formData = new FormData();
+          formData.append("table_name", selectedTable);
+          formData.append("fetch_table_data", "true");
+
+          fetch(window.location.href, {
+            method: "POST",
+            body: formData,
+            headers: {
+              "X-CSRFToken": "{{ csrf_token }}",
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              const tableHead = document.querySelector(
+                "#table-data table thead"
+              );
+              const tableBody = document.querySelector(
+                "#table-data table tbody"
+              );
+
+              // Clear existing table contents
+              tableHead.innerHTML = "";
+              tableBody.innerHTML = "";
+
+              if (data.length > 0) {
+                // Create table header
+                const headerRow = document.createElement("tr");
+                Object.keys(data[0]).forEach((column) => {
+                  const th = document.createElement("th");
+                  th.textContent = column;
+                  headerRow.appendChild(th);
+                });
+                tableHead.appendChild(headerRow);
+
+                // Create table body
+                data.forEach((row) => {
+                  const tableRow = document.createElement("tr");
+                  Object.values(row).forEach((cell) => {
+                    const tableCell = document.createElement("td");
+                    tableCell.textContent = cell;
+                    tableRow.appendChild(tableCell);
+                  });
+                  tableBody.appendChild(tableRow);
+                });
+                document.getElementById("no-results-msg").style.display =
+                  "none";
+              } else {
+                document.getElementById("no-results-msg").style.display =
+                  "block";
+              }
+              document.getElementById("table-data").style.display = "block";
+            })
+            .catch((error) => {
+              console.error("Error fetching table data:", error);
+            });
+        }
+      }
+
+      function closeTableData() {
+        document.getElementById("table-data").style.display = "none";
+      }
+
+      function loadHistory(index) {
+        const queryHistory = JSON.parse("{{ query_history|escapejs }}");
+        const item = queryHistory[index];
+        window.location.href = `?load_history=${index}`;
+      }
+    </script>
+  </body>
+</html>
